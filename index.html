@@ -1,0 +1,811 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>StreamZone - Video Streaming</title>
+
+<style>
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background: #0b0b0f;
+    color: white;
+}
+
+/* HEADER */
+header {
+    height: 70px;
+    background: #111116;
+    display: flex;
+    align-items: center;
+    padding: 0 5%;
+    gap: 30px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    border-bottom: 1px solid #292932;
+}
+
+.logo {
+    font-size: 25px;
+    font-weight: bold;
+    color: #ff1744;
+    white-space: nowrap;
+}
+
+.search-box {
+    flex: 1;
+    max-width: 600px;
+    display: flex;
+}
+
+.search-box input {
+    width: 100%;
+    padding: 13px 18px;
+    border: none;
+    outline: none;
+    background: #25252d;
+    color: white;
+    border-radius: 8px 0 0 8px;
+    font-size: 15px;
+}
+
+.search-box button {
+    width: 55px;
+    border: none;
+    background: #ff1744;
+    color: white;
+    cursor: pointer;
+    border-radius: 0 8px 8px 0;
+    font-size: 18px;
+}
+
+.nav-buttons {
+    margin-left: auto;
+    display: flex;
+    gap: 10px;
+}
+
+.nav-buttons button {
+    background: #22222a;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.nav-buttons button:hover {
+    background: #ff1744;
+}
+
+/* HERO */
+.hero {
+    min-height: 420px;
+    padding: 80px 7%;
+    display: flex;
+    align-items: center;
+    background:
+        linear-gradient(90deg, #0b0b0f 10%, rgba(11,11,15,.85), rgba(11,11,15,.25)),
+        url("https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?auto=format&fit=crop&w=1600&q=80")
+        center/cover;
+}
+
+.hero-content {
+    max-width: 600px;
+}
+
+.hero h1 {
+    font-size: 55px;
+    margin-bottom: 15px;
+}
+
+.hero p {
+    color: #ddd;
+    line-height: 1.6;
+    margin-bottom: 25px;
+}
+
+.watch-button {
+    padding: 14px 25px;
+    background: #ff1744;
+    color: white;
+    border: none;
+    border-radius: 7px;
+    font-size: 17px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.watch-button:hover {
+    background: #e50035;
+}
+
+/* CATEGORIES */
+.categories {
+    padding: 25px 5%;
+    display: flex;
+    gap: 12px;
+    overflow-x: auto;
+}
+
+.category {
+    background: #22222a;
+    color: white;
+    border: none;
+    padding: 10px 18px;
+    border-radius: 20px;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.category:hover,
+.category.active {
+    background: #ff1744;
+}
+
+/* CONTENT */
+.container {
+    padding: 10px 5% 50px;
+}
+
+.section-title {
+    font-size: 25px;
+    margin: 30px 0 20px;
+}
+
+/* VIDEO GRID */
+.video-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+    gap: 22px;
+}
+
+.video-card {
+    background: #15151b;
+    border-radius: 10px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: .25s;
+}
+
+.video-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(0,0,0,.5);
+}
+
+.thumbnail {
+    height: 140px;
+    position: relative;
+    overflow: hidden;
+}
+
+.thumbnail img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.play-icon {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(255,23,68,.95);
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: .2s;
+}
+
+.video-card:hover .play-icon {
+    opacity: 1;
+}
+
+.video-info {
+    padding: 14px;
+}
+
+.video-title {
+    font-weight: bold;
+    margin-bottom: 8px;
+}
+
+.video-meta {
+    color: #999;
+    font-size: 13px;
+}
+
+/* PLAYER MODAL */
+.player-modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,.92);
+    z-index: 1000;
+    padding: 30px;
+    overflow-y: auto;
+}
+
+.player-box {
+    max-width: 1000px;
+    margin: 20px auto;
+}
+
+.close-player {
+    float: right;
+    background: #ff1744;
+    border: none;
+    color: white;
+    font-size: 20px;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    cursor: pointer;
+    margin-bottom: 15px;
+}
+
+video {
+    width: 100%;
+    max-height: 70vh;
+    background: black;
+    border-radius: 10px;
+}
+
+.player-title {
+    margin-top: 15px;
+    font-size: 25px;
+}
+
+.player-description {
+    margin-top: 10px;
+    color: #bbb;
+    line-height: 1.6;
+}
+
+/* EMPTY SEARCH */
+.no-results {
+    text-align: center;
+    padding: 50px;
+    color: #aaa;
+    display: none;
+}
+
+/* FOOTER */
+footer {
+    background: #111116;
+    padding: 35px;
+    text-align: center;
+    color: #888;
+    margin-top: 30px;
+}
+
+/* MOBILE */
+@media(max-width: 700px) {
+
+    header {
+        height: auto;
+        padding: 15px;
+        flex-wrap: wrap;
+    }
+
+    .logo {
+        width: 100%;
+    }
+
+    .search-box {
+        width: 100%;
+        order: 3;
+    }
+
+    .nav-buttons {
+        margin-left: 0;
+    }
+
+    .hero {
+        min-height: 350px;
+        padding: 40px 7%;
+    }
+
+    .hero h1 {
+        font-size: 38px;
+    }
+
+    .video-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+    }
+
+    .thumbnail {
+        height: 110px;
+    }
+
+    .video-info {
+        padding: 10px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<!-- HEADER -->
+<header>
+
+    <div class="logo">▶ StreamZone</div>
+
+    <div class="search-box">
+        <input
+            type="text"
+            id="searchInput"
+            placeholder="Search videos..."
+            onkeyup="searchVideos()"
+        >
+        <button onclick="searchVideos()">🔍</button>
+    </div>
+
+    <div class="nav-buttons">
+        <button onclick="showHome()">Home</button>
+        <button onclick="showTrending()">🔥 Trending</button>
+    </div>
+
+</header>
+
+
+<!-- HERO -->
+<section class="hero">
+
+    <div class="hero-content">
+
+        <h1>Watch Something Amazing</h1>
+
+        <p>
+            Discover exciting videos, adventure, nature and entertainment
+            all in one place.
+        </p>
+
+        <button class="watch-button" onclick="openVideo(0)">
+            ▶ Watch Now
+        </button>
+
+    </div>
+
+</section>
+
+
+<!-- CATEGORIES -->
+<div class="categories">
+
+    <button class="category active" onclick="filterCategory('All', this)">
+        All
+    </button>
+
+    <button class="category" onclick="filterCategory('Adventure', this)">
+        Adventure
+    </button>
+
+    <button class="category" onclick="filterCategory('Nature', this)">
+        Nature
+    </button>
+
+    <button class="category" onclick="filterCategory('Travel', this)">
+        Travel
+    </button>
+
+    <button class="category" onclick="filterCategory('Technology', this)">
+        Technology
+    </button>
+
+</div>
+
+
+<!-- MAIN -->
+<main class="container">
+
+    <h2 class="section-title" id="sectionTitle">
+        Popular Videos
+    </h2>
+
+    <div id="videoGrid" class="video-grid"></div>
+
+    <div id="noResults" class="no-results">
+        <h2>😕 No videos found</h2>
+        <p>Try another search.</p>
+    </div>
+
+</main>
+
+
+<!-- VIDEO PLAYER -->
+<div class="player-modal" id="playerModal">
+
+    <div class="player-box">
+
+        <button class="close-player" onclick="closePlayer()">
+            ×
+        </button>
+
+        <video id="videoPlayer" controls></video>
+
+        <h2 class="player-title" id="playerTitle"></h2>
+
+        <p class="player-description" id="playerDescription"></p>
+
+    </div>
+
+</div>
+
+
+<footer>
+    © 2026 StreamZone — Your Video Streaming App
+</footer>
+
+
+<script>
+
+/* ==============================
+   VIDEO DATABASE
+================================ */
+
+const videos = [
+
+    {
+        title: "Big Buck Bunny",
+        category: "Adventure",
+        views: "1.2M views",
+        duration: "9:56",
+        thumbnail:
+        "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=800&q=80",
+
+        video:
+        "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
+
+        description:
+        "Enjoy this animated adventure featuring beautiful scenery and fun characters."
+    },
+
+    {
+        title: "Nature Adventure",
+        category: "Nature",
+        views: "856K views",
+        duration: "5:20",
+        thumbnail:
+        "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?auto=format&fit=crop&w=800&q=80",
+
+        video:
+        "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4",
+
+        description:
+        "Explore beautiful natural environments and amazing outdoor scenery."
+    },
+
+    {
+        title: "Amazing Travel",
+        category: "Travel",
+        views: "2.4M views",
+        duration: "8:30",
+        thumbnail:
+        "https://images.unsplash.com/photo-1500534623283-312aade485b7?auto=format&fit=crop&w=800&q=80",
+
+        video:
+        "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4",
+
+        description:
+        "Take a virtual journey through exciting destinations."
+    },
+
+    {
+        title: "Technology World",
+        category: "Technology",
+        views: "740K views",
+        duration: "6:15",
+        thumbnail:
+        "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=800&q=80",
+
+        video:
+        "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4",
+
+        description:
+        "Discover technology and the amazing digital world."
+    },
+
+    {
+        title: "Elephants in the Wild",
+        category: "Nature",
+        views: "950K views",
+        duration: "7:42",
+        thumbnail:
+        "https://images.unsplash.com/photo-1557050543-4d5f4e07ef46?auto=format&fit=crop&w=800&q=80",
+
+        video:
+        "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4",
+
+        description:
+        "Experience wildlife and nature in this exciting video."
+    },
+
+    {
+        title: "Mountain Journey",
+        category: "Adventure",
+        views: "1.8M views",
+        duration: "10:10",
+        thumbnail:
+        "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=800&q=80",
+
+        video:
+        "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4",
+
+        description:
+        "A cinematic journey through mountains and incredible landscapes."
+    }
+
+];
+
+
+/* ==============================
+   DISPLAY VIDEOS
+================================ */
+
+function displayVideos(list) {
+
+    const grid = document.getElementById("videoGrid");
+
+    const noResults = document.getElementById("noResults");
+
+    grid.innerHTML = "";
+
+    if (list.length === 0) {
+
+        noResults.style.display = "block";
+
+        return;
+
+    }
+
+    noResults.style.display = "none";
+
+
+    list.forEach((video, index) => {
+
+        const card = document.createElement("div");
+
+        card.className = "video-card";
+
+        card.onclick = function() {
+
+            openVideo(videos.indexOf(video));
+
+        };
+
+
+        card.innerHTML = `
+
+            <div class="thumbnail">
+
+                <img
+                    src="${video.thumbnail}"
+                    alt="${video.title}"
+                >
+
+                <div class="play-icon">
+                    ▶
+                </div>
+
+            </div>
+
+            <div class="video-info">
+
+                <div class="video-title">
+                    ${video.title}
+                </div>
+
+                <div class="video-meta">
+
+                    ${video.category}
+                    •
+                    ${video.views}
+                    •
+                    ${video.duration}
+
+                </div>
+
+            </div>
+
+        `;
+
+
+        grid.appendChild(card);
+
+    });
+
+}
+
+
+/* ==============================
+   OPEN VIDEO
+================================ */
+
+function openVideo(index) {
+
+    const video = videos[index];
+
+    const player = document.getElementById("videoPlayer");
+
+    const modal = document.getElementById("playerModal");
+
+    document.getElementById("playerTitle").textContent =
+        video.title;
+
+    document.getElementById("playerDescription").textContent =
+        video.description;
+
+
+    player.src = video.video;
+
+    modal.style.display = "block";
+
+    player.play().catch(() => {});
+
+
+    /* Save recently watched */
+
+    localStorage.setItem(
+        "lastWatched",
+        JSON.stringify(video)
+    );
+
+}
+
+
+/* ==============================
+   CLOSE PLAYER
+================================ */
+
+function closePlayer() {
+
+    const player = document.getElementById("videoPlayer");
+
+    player.pause();
+
+    player.src = "";
+
+    document.getElementById("playerModal").style.display = "none";
+
+}
+
+
+/* ==============================
+   SEARCH
+================================ */
+
+function searchVideos() {
+
+    const search =
+        document
+        .getElementById("searchInput")
+        .value
+        .toLowerCase();
+
+
+    const results = videos.filter(video =>
+
+        video.title.toLowerCase().includes(search) ||
+
+        video.category.toLowerCase().includes(search)
+
+    );
+
+
+    document.getElementById("sectionTitle").textContent =
+        search ? "Search Results" : "Popular Videos";
+
+
+    displayVideos(results);
+
+}
+
+
+/* ==============================
+   CATEGORY FILTER
+================================ */
+
+function filterCategory(category, button) {
+
+    document
+        .querySelectorAll(".category")
+        .forEach(btn => btn.classList.remove("active"));
+
+    button.classList.add("active");
+
+
+    if (category === "All") {
+
+        displayVideos(videos);
+
+    } else {
+
+        const filtered =
+            videos.filter(video =>
+                video.category === category
+            );
+
+        displayVideos(filtered);
+
+    }
+
+
+    document.getElementById("sectionTitle").textContent =
+        category === "All"
+        ? "Popular Videos"
+        : category + " Videos";
+
+}
+
+
+/* ==============================
+   TRENDING
+================================ */
+
+function showTrending() {
+
+    const trending = [...videos].sort(() => Math.random() - .5);
+
+    document.getElementById("sectionTitle").textContent =
+        "🔥 Trending Videos";
+
+    displayVideos(trending);
+
+}
+
+
+/* ==============================
+   HOME
+================================ */
+
+function showHome() {
+
+    document.getElementById("searchInput").value = "";
+
+    document.getElementById("sectionTitle").textContent =
+        "Popular Videos";
+
+    displayVideos(videos);
+
+}
+
+
+/* ==============================
+   ESCAPE KEY
+================================ */
+
+document.addEventListener("keydown", function(event) {
+
+    if (event.key === "Escape") {
+
+        closePlayer();
+
+    }
+
+});
+
+
+/* ==============================
+   START APP
+================================ */
+
+displayVideos(videos);
+
+</script>
+
+</body>
+</html>
