@@ -464,348 +464,65 @@ const videos = [
         category: "Adventure",
         views: "1.2M views",
         duration: "9:56",
+
         thumbnail:
-        "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=800&q=80",
+        "https://peach.blender.org/wp-content/uploads/title_anouncement.jpg",
 
         video:
-        "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
+        "https://storage.googleapis.com/coverr-main/mp4/Mt_Baker.mp4",
 
         description:
-        "Enjoy this animated adventure featuring beautiful scenery and fun characters."
+        "Enjoy this beautiful adventure video."
     },
 
     {
-        title: "Nature Adventure",
+        title: "Nature Escape",
         category: "Nature",
         views: "856K views",
-        duration: "5:20",
+        duration: "1:20",
+
         thumbnail:
         "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?auto=format&fit=crop&w=800&q=80",
 
         video:
-        "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4",
+        "https://storage.googleapis.com/coverr-main/mp4/Footboys.mp4",
 
         description:
-        "Explore beautiful natural environments and amazing outdoor scenery."
+        "Relax and explore beautiful natural scenery."
     },
 
     {
-        title: "Amazing Travel",
-        category: "Travel",
-        views: "2.4M views",
-        duration: "8:30",
-        thumbnail:
-        "https://images.unsplash.com/photo-1500534623283-312aade485b7?auto=format&fit=crop&w=800&q=80",
-
-        video:
-        "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4",
-
-        description:
-        "Take a virtual journey through exciting destinations."
-    },
-
-    {
-        title: "Technology World",
-        category: "Technology",
-        views: "740K views",
-        duration: "6:15",
-        thumbnail:
-        "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=800&q=80",
-
-        video:
-        "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4",
-
-        description:
-        "Discover technology and the amazing digital world."
-    },
-
-    {
-        title: "Elephants in the Wild",
-        category: "Nature",
-        views: "950K views",
-        duration: "7:42",
-        thumbnail:
-        "https://images.unsplash.com/photo-1557050543-4d5f4e07ef46?auto=format&fit=crop&w=800&q=80",
-
-        video:
-        "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4",
-
-        description:
-        "Experience wildlife and nature in this exciting video."
-    },
-
-    {
-        title: "Mountain Journey",
+        title: "Mountain Adventure",
         category: "Adventure",
         views: "1.8M views",
-        duration: "10:10",
+        duration: "1:30",
+
         thumbnail:
         "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=800&q=80",
 
         video:
-        "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4",
+        "https://storage.googleapis.com/coverr-main/mp4/Mt_Baker.mp4",
 
         description:
-        "A cinematic journey through mountains and incredible landscapes."
+        "A beautiful journey through mountains and nature."
+    },
+
+    {
+        title: "Beautiful Forest",
+        category: "Nature",
+        views: "950K views",
+        duration: "1:15",
+
+        thumbnail:
+        "https://images.unsplash.com/photo-1511497584788-876760111969?auto=format&fit=crop&w=800&q=80",
+
+        video:
+        "https://storage.googleapis.com/coverr-main/mp4/Forest_Lullaby.mp4",
+
+        description:
+        "Discover a peaceful forest environment."
     }
 
 ];
-
-
-/* ==============================
-   DISPLAY VIDEOS
-================================ */
-
-function displayVideos(list) {
-
-    const grid = document.getElementById("videoGrid");
-
-    const noResults = document.getElementById("noResults");
-
-    grid.innerHTML = "";
-
-    if (list.length === 0) {
-
-        noResults.style.display = "block";
-
-        return;
-
-    }
-
-    noResults.style.display = "none";
-
-
-    list.forEach((video, index) => {
-
-        const card = document.createElement("div");
-
-        card.className = "video-card";
-
-        card.onclick = function() {
-
-            openVideo(videos.indexOf(video));
-
-        };
-
-
-        card.innerHTML = `
-
-            <div class="thumbnail">
-
-                <img
-                    src="${video.thumbnail}"
-                    alt="${video.title}"
-                >
-
-                <div class="play-icon">
-                    ▶
-                </div>
-
-            </div>
-
-            <div class="video-info">
-
-                <div class="video-title">
-                    ${video.title}
-                </div>
-
-                <div class="video-meta">
-
-                    ${video.category}
-                    •
-                    ${video.views}
-                    •
-                    ${video.duration}
-
-                </div>
-
-            </div>
-
-        `;
-
-
-        grid.appendChild(card);
-
-    });
-
-}
-
-
-/* ==============================
-   OPEN VIDEO
-================================ */
-
-function openVideo(index) {
-
-    const video = videos[index];
-
-    const player = document.getElementById("videoPlayer");
-
-    const modal = document.getElementById("playerModal");
-
-    document.getElementById("playerTitle").textContent =
-        video.title;
-
-    document.getElementById("playerDescription").textContent =
-        video.description;
-
-
-    player.src = video.video;
-
-    modal.style.display = "block";
-
-    player.play().catch(() => {});
-
-
-    /* Save recently watched */
-
-    localStorage.setItem(
-        "lastWatched",
-        JSON.stringify(video)
-    );
-
-}
-
-
-/* ==============================
-   CLOSE PLAYER
-================================ */
-
-function closePlayer() {
-
-    const player = document.getElementById("videoPlayer");
-
-    player.pause();
-
-    player.src = "";
-
-    document.getElementById("playerModal").style.display = "none";
-
-}
-
-
-/* ==============================
-   SEARCH
-================================ */
-
-function searchVideos() {
-
-    const search =
-        document
-        .getElementById("searchInput")
-        .value
-        .toLowerCase();
-
-
-    const results = videos.filter(video =>
-
-        video.title.toLowerCase().includes(search) ||
-
-        video.category.toLowerCase().includes(search)
-
-    );
-
-
-    document.getElementById("sectionTitle").textContent =
-        search ? "Search Results" : "Popular Videos";
-
-
-    displayVideos(results);
-
-}
-
-
-/* ==============================
-   CATEGORY FILTER
-================================ */
-
-function filterCategory(category, button) {
-
-    document
-        .querySelectorAll(".category")
-        .forEach(btn => btn.classList.remove("active"));
-
-    button.classList.add("active");
-
-
-    if (category === "All") {
-
-        displayVideos(videos);
-
-    } else {
-
-        const filtered =
-            videos.filter(video =>
-                video.category === category
-            );
-
-        displayVideos(filtered);
-
-    }
-
-
-    document.getElementById("sectionTitle").textContent =
-        category === "All"
-        ? "Popular Videos"
-        : category + " Videos";
-
-}
-
-
-/* ==============================
-   TRENDING
-================================ */
-
-function showTrending() {
-
-    const trending = [...videos].sort(() => Math.random() - .5);
-
-    document.getElementById("sectionTitle").textContent =
-        "🔥 Trending Videos";
-
-    displayVideos(trending);
-
-}
-
-
-/* ==============================
-   HOME
-================================ */
-
-function showHome() {
-
-    document.getElementById("searchInput").value = "";
-
-    document.getElementById("sectionTitle").textContent =
-        "Popular Videos";
-
-    displayVideos(videos);
-
-}
-
-
-/* ==============================
-   ESCAPE KEY
-================================ */
-
-document.addEventListener("keydown", function(event) {
-
-    if (event.key === "Escape") {
-
-        closePlayer();
-
-    }
-
-});
-
-
-/* ==============================
-   START APP
-================================ */
-
-displayVideos(videos);
-
-</script>
-
 </body>
 </html>
